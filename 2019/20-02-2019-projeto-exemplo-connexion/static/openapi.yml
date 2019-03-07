@@ -1,0 +1,88 @@
+openapi: "3.0.0"
+info:
+  title: Exemplo de API
+  version: "1.0"
+paths:
+  /pessoas:
+    get:
+      operationId: app.pessoas
+      summary: Listar pessoas
+      parameters:
+        - name: nome
+          in: query
+          description: Filtro por qualquer parte do nome.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de pessoas encontradas.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pessoas:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PessoaIdentificada"
+    post:
+      operationId: app.nova_pessoa
+      summary: Cadastrar pessoa
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Pessoa"
+      responses:
+        '201':
+          description: Pessoa cadastrada com sucesso.
+        '400':
+          description: Dados inválidos.
+  /pessoas/{pk}:
+    get:
+      operationId: app.pessoa
+      summary: Buscar detalhes da pessoa
+      parameters:
+        - name: pk
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalhes da pessoa.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pessoa"
+        '404':
+          description: Pessoa não encontrada.
+components:
+  schemas:
+    Identificavel:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: number
+      example:
+        id: 1
+    Pessoa:
+      type: object
+      required:
+      - nome
+      - nascimento
+      properties:
+        nome:
+          type: string
+        nascimento:
+          type: string
+          format: date
+      example:
+        nome: Aristóteles
+        nascimento: 2018-05-30
+    PessoaIdentificada:
+      allOf:
+        - $ref: "#/components/schemas/Pessoa"
+        - $ref: "#/components/schemas/Identificavel"
